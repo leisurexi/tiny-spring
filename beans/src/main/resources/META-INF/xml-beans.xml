@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+    <bean id="user" class="com.leisurexi.tiny.spring.beans.domain.User">
+        <property name="id" value="1"/>
+        <property name="name" value="leisurexi"/>
+    </bean>
+</beans>
