@@ -9,7 +9,7 @@
 
 #### 0.0.1
 
-主要实现从 XML 文件中读取 `Bean` 的定义信息并构建成 `BeanDefinition`，创建了一个简单的 `BeanFactory` 用来获取 `Bean`，现在只可以 **依赖查找**，也就是手动去调用 `getBean` 方法去获取 `Bean` 。
+主要实现从 XML 文件中读取 `bean` 的定义信息并构建成 `BeanDefinition`，创建了一个简单的 `BeanFactory` 用来获取 `bean`，现在只可以 **依赖查找**，也就是手动去调用 `getBean` 方法去获取 `bean` 。
 
 #### 0.0.2
 
