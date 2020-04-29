@@ -87,7 +87,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         }
         Scope previous = scopes.put(scope.scopeName(), scope);
         if (previous != null && previous != scope) {
-            log.debug("Replacing scope '{}' from [] to []", scope.scopeName(), previous, scope);
+            log.debug("Replacing scope '{}' from [{}] to [{}]", scope.scopeName(), previous, scope);
         } else {
             log.debug("Registering scope '{}' with implementation [{}]", scope.scopeName(), scope);
         }
