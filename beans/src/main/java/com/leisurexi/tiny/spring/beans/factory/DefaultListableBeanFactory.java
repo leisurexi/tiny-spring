@@ -33,6 +33,7 @@ public class DefaultListableBeanFactory extends AutowireCapableBeanFactory imple
         if (existingDefinition != null) {
             throw new BeansException(String.format("[%s] already existing definition. existing definition: [%s]", beanName, existingDefinition));
         }
+        // 缓存 beanDefinition，如果是原型作用域可以重复使用
         beanDefinitionMap.put(beanName, beanDefinition);
         beanDefinitionNames.add(beanName);
     }

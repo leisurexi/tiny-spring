@@ -19,6 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BeanDefinition {
 
+    public static final String SCOPE_SINGLETON = "singleton";
+
+    public static final String SCOPE_PROTOTYPE = "prototype";
+
     /**
      * bean 的 Class对象
      */
@@ -33,5 +37,29 @@ public class BeanDefinition {
      * bean 的属性
      */
     private PropertyValues propertyValues;
+
+    /**
+     * bean 作用域
+     * @since 0.0.2
+     */
+    private String scope;
+
+    /**
+     * bean 的作用域是否是单例
+     * @see #SCOPE_SINGLETON
+     * @since 0.0.2
+     */
+    public boolean isSingleton() {
+        return SCOPE_SINGLETON.equals(this.scope);
+    }
+
+    /**
+     * bean 的作用域是否原型
+     * @see #SCOPE_PROTOTYPE
+     * @since 0.0.2
+     */
+    public boolean isPrototype() {
+        return SCOPE_PROTOTYPE.equals(this.scope);
+    }
 
 }

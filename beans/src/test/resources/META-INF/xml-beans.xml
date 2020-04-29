@@ -4,4 +4,6 @@
         <property name="id" value="1"/>
         <property name="name" value="leisurexi"/>
     </bean>
+
+    <bean id="thread-local-user" class="com.leisurexi.tiny.spring.beans.domain.User" scope="thread-local"/>
 </beans>

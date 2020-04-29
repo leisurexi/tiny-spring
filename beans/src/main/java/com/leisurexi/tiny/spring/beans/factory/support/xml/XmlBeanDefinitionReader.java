@@ -18,6 +18,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_PROTOTYPE;
+import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_SINGLETON;
+
 /**
  * 从 XML 文件读取 Bean 配置实现
  *
@@ -100,6 +103,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
      * 解析 XML 节点 id 和 class 节点值，并为 beanDefinition 设置
      *
      * @param element 节点
+     * @since 0.0.2
      */
     protected void processBeanDefinition(Element element) {
         String id = element.getAttribute("id");
@@ -110,9 +114,14 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         if (Strings.isNullOrEmpty(className)) {
             throw new IllegalStateException("className attribute must bo not bull");
         }
+        String scope = element.getAttribute("scope");
+        if (Strings.isNullOrEmpty(scope)) {
+            scope = "singleton";
+        }
         BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName(className);
         beanDefinition.setPropertyValues(new PropertyValues());
+        beanDefinition.setScope(scope);
         try {
             beanDefinition.setBeanClass(Class.forName(className));
         } catch (ClassNotFoundException e) {
@@ -120,7 +129,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
         processProperty(element, beanDefinition);
         getBeanRegistry().registryBeanDefinition(id, beanDefinition);
-        log.info("加载 Bean: {}，具体信息: {}", id, beanDefinition);
+        log.debug("加载 Bean: [{}]，具体信息: [{}]", id, beanDefinition);
     }
 
     /**

@@ -29,4 +29,6 @@ public class BeanFactoryTest {
         log.info(user.toString());
     }
 
+
+
 }
