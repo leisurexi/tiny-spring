@@ -10,3 +10,63 @@
 #### 0.0.1
 
 主要实现从 XML 文件中读取 `Bean` 的定义信息并构建成 `BeanDefinition`，创建了一个简单的 `BeanFactory` 用来获取 `Bean`，现在只可以 **依赖查找**，也就是手动去调用 `getBean` 方法去获取 `Bean` 。
+
+#### 0.0.2
+
+增加了 `bean` 的作用域，默认支持两种作用域 `singleton` 和 `prototype`；还支持自定义作用域，实现 `Scope` 接口即可。以下是 `ThreadLocal` 级别作用域的扩展示例。
+
+首先实现 `Scope` 接口，如下：
+
+```java
+public class ThreadLocalScope implements Scope {
+
+    private ThreadLocal<Map<String, Object>> threadLocal = new ThreadLocal() {
+        // 兜底实现，防止空指针
+        @Override
+        protected Object initialValue() {
+            return new HashMap<>();
+        }
+    };
+
+    @Override
+    public String scopeName() {
+        return "thread-local";
+    }
+
+    @Override
+    public Object get(String name, ObjectFactory<?> objectFactory) {
+        Map<String, Object> map = threadLocal.get();
+        Object bean = map.get(name);
+        if (bean == null) {
+            bean = objectFactory.getObject();
+            map.put(name, bean);
+        }
+        return bean;
+    }
+
+}
+```
+
+然后测试类，如下：
+
+```java
+@Test
+public void scopeTest() throws InterruptedException {
+    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+    beanFactory.registerScope(new ThreadLocalScope());
+    XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+    beanDefinitionReader.loadBeanDefinitions("META-INF/xml-beans.xml");
+    for (int i = 0; i < 3; i++) {
+        Thread thread = new Thread(() -> {
+            User user = (User) beanFactory.getBean("thread-local-user");
+            System.err.printf("[Thread id :%d] user = %s%n", Thread.currentThread().getId(), user.getClass().getName() + "@" + Integer.toHexString(user.hashCode()));
+            User user1 = (User) beanFactory.getBean("thread-local-user");
+            System.err.printf("[Thread id :%d] user1 = %s%n", Thread.currentThread().getId(), user1.getClass().getName() + "@" + Integer.toHexString(user1.hashCode()));
+        });
+        thread.start();
+        thread.join();
+    }
+}
+```
+
+全部代码可以在 `beans` 模块的 `test` 包下找到。
