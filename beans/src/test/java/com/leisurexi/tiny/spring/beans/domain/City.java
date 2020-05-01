@@ -4,18 +4,17 @@ import lombok.*;
 
 /**
  * @author: leisurexi
- * @date: 2020-04-04 7:39 下午
- * @since 0.0.1
+ * @date: 2020-04-30 0:41
+ * @since 0.0.3
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
-public class User {
+public class City {
 
     private Long id;
     private String name;
-    private City city;
 
 }

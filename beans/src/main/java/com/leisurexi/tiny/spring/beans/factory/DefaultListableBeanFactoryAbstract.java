@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date: 2020-04-05 2:44 下午
  * @since 0.0.1
  */
-public class DefaultListableBeanFactory extends AutowireCapableBeanFactory implements BeanDefinitionRegistry {
+public class DefaultListableBeanFactoryAbstract extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry {
 
     /**
      * 存储 bean definition 的 Map，key 是 bean 的名称，value 就是 BeanDefinition

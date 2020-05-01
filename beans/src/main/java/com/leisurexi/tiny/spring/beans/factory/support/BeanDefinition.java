@@ -1,10 +1,13 @@
 package com.leisurexi.tiny.spring.beans.factory.support;
 
 import com.leisurexi.tiny.spring.beans.PropertyValues;
+import com.leisurexi.tiny.spring.beans.factory.config.ConstructorArgumentValues;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Constructor;
 
 /**
  * bean 定义的元信息
@@ -45,6 +48,12 @@ public class BeanDefinition {
     private String scope;
 
     /**
+     * 构造函数参数
+     * @since 0.0.3
+     */
+    private ConstructorArgumentValues constructorArgumentValues;
+
+    /**
      * bean 的作用域是否是单例
      * @see #SCOPE_SINGLETON
      * @since 0.0.2
@@ -60,6 +69,14 @@ public class BeanDefinition {
      */
     public boolean isPrototype() {
         return SCOPE_PROTOTYPE.equals(this.scope);
+    }
+
+    /**
+     * bean 是否有构造函数参数
+     * @since 0.0.3
+     */
+    public boolean hasConstructorArgumentValues() {
+        return (this.constructorArgumentValues != null && !this.constructorArgumentValues.isEmpty());
     }
 
 }

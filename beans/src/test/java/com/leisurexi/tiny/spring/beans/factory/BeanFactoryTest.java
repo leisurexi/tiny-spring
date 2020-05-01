@@ -23,7 +23,7 @@ public class BeanFactoryTest {
         propertyValues.addPropertyValues(new PropertyValue("id", 1L));
         propertyValues.addPropertyValues(new PropertyValue("name", "leisurexi"));
         beanDefinition.setPropertyValues(propertyValues);
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        DefaultListableBeanFactoryAbstract beanFactory = new DefaultListableBeanFactoryAbstract();
         beanFactory.registryBeanDefinition("user", beanDefinition);
         User user = (User) beanFactory.getBean("user");
         log.info(user.toString());
