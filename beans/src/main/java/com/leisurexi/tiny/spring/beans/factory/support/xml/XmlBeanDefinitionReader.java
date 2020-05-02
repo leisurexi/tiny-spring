@@ -20,8 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_PROTOTYPE;
-import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_SINGLETON;
+import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.*;
 
 /**
  * 从 XML 文件读取 Bean 配置实现
@@ -120,9 +119,28 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         if (Strings.isNullOrEmpty(scope)) {
             scope = "singleton";
         }
+        String autowire = element.getAttribute("autowire");
+        int autowireMode = AUTOWIRE_NO;
+        if (autowire != null) {
+            if ("no".equals(autowire) || "byName".equals(autowire) || "byType".equals(autowire) || "constructor".equals(autowire)) {
+                throw new IllegalArgumentException("Attribute autowire only support 'no' or 'byName' or 'byType' or 'constructor'");
+            }
+            switch (autowire) {
+                case "byName":
+                    autowireMode = AUTOWIRE_BY_NAME;
+                    break;
+                case "byType":
+                    autowireMode = AUTOWIRE_BY_TYPE;
+                    break;
+                case "constructor":
+                    autowireMode = AUTOWIRE_CONSTRUCTOR;
+                    break;
+            }
+        }
         BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName(className);
         beanDefinition.setScope(scope);
+        beanDefinition.setAutowireMode(autowireMode);
         try {
             beanDefinition.setBeanClass(Class.forName(className));
         } catch (ClassNotFoundException e) {

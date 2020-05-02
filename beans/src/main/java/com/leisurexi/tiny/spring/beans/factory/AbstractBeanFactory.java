@@ -1,13 +1,17 @@
 package com.leisurexi.tiny.spring.beans.factory;
 
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
+import com.leisurexi.tiny.spring.beans.factory.config.BeanPostProcessor;
+import com.leisurexi.tiny.spring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import com.leisurexi.tiny.spring.beans.factory.config.Scope;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_PROTOTYPE;
 import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_SINGLETON;
@@ -31,6 +35,11 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      * 自定义作用域保存容器
      */
     private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
+
+    /**
+     * 保存注册的 bean 的扩展接口
+     */
+    private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
     @Override
     public Object getBean(String name) {
@@ -91,6 +100,23 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         } else {
             log.debug("Registering scope '{}' with implementation [{}]", scope.scopeName(), scope);
         }
+    }
+
+    /**
+     * 添加 bean 的扩展接口
+     *
+     * @param beanPostProcessor
+     */
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.remove(beanPostProcessor);
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    /**
+     * 返回所有已经注册的 bean 的扩展接口
+     */
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
     }
 
     /**

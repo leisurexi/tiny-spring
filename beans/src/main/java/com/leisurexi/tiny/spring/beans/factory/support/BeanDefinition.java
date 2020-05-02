@@ -27,6 +27,41 @@ public class BeanDefinition {
     public static final String SCOPE_PROTOTYPE = "prototype";
 
     /**
+     * 不自动装配
+     *
+     * @since 0.0.3
+     */
+    public static final int AUTOWIRE_NO = 0;
+
+    /**
+     * 按名称注入
+     *
+     * @since 0.0.3
+     */
+    public static final int AUTOWIRE_BY_NAME = 1;
+
+    /**
+     * 按类型注入
+     *
+     * @since 0.0.3
+     */
+    public static final int AUTOWIRE_BY_TYPE = 2;
+
+    /**
+     * 构造器注入
+     *
+     * @since 0.0.3
+     */
+    public static final int AUTOWIRE_CONSTRUCTOR = 3;
+
+    /**
+     * 依赖注入类型，默认不依赖注入
+     *
+     * @since 0.0.3
+     */
+    private int autowireMode = AUTOWIRE_NO;
+
+    /**
      * bean 的 Class对象
      */
     private Class beanClass;
@@ -43,18 +78,21 @@ public class BeanDefinition {
 
     /**
      * bean 作用域
+     *
      * @since 0.0.2
      */
     private String scope;
 
     /**
      * 构造函数参数
+     *
      * @since 0.0.3
      */
     private ConstructorArgumentValues constructorArgumentValues;
 
     /**
      * bean 的作用域是否是单例
+     *
      * @see #SCOPE_SINGLETON
      * @since 0.0.2
      */
@@ -64,6 +102,7 @@ public class BeanDefinition {
 
     /**
      * bean 的作用域是否原型
+     *
      * @see #SCOPE_PROTOTYPE
      * @since 0.0.2
      */
@@ -73,6 +112,7 @@ public class BeanDefinition {
 
     /**
      * bean 是否有构造函数参数
+     *
      * @since 0.0.3
      */
     public boolean hasConstructorArgumentValues() {
