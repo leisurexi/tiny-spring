@@ -1,17 +1,19 @@
 package com.leisurexi.tiny.spring.beans.factory.support;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.ArrayUtil;
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
 import com.leisurexi.tiny.spring.beans.factory.AbstractAutowireCapableBeanFactory;
 import com.leisurexi.tiny.spring.beans.factory.config.ConstructorArgumentValues;
 import com.leisurexi.tiny.spring.beans.factory.config.DependencyDescriptor;
+import com.leisurexi.tiny.spring.beans.util.LocalVariableTableParameterNameDiscoverer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.AUTOWIRE_CONSTRUCTOR;
 
@@ -22,9 +24,8 @@ import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.AUT
  * @date: 2020-05-01 11:15
  * @since 0.0.3
  */
+@Slf4j
 public class ConstructorResolver {
-
-    private static final Object[] EMPTY_ARGS = new Object[0];
 
     private AbstractAutowireCapableBeanFactory beanFactory;
 
@@ -56,20 +57,37 @@ public class ConstructorResolver {
         int minNrOfArgs = cargs.getArgumentCount();
         resolveConstructorArguments(beanName, beanDefinition, cargs, resolvedValues);
 
-        for (Constructor<?> candidate : candidates) {
-            argsToUse = createArgumentArray(beanName, beanDefinition.getBeanClass(), candidate.getParameterTypes(), getParameters(candidate), resolvedValues, autowiring);
+        // 这里对构造函数进行排序，规则是首先是public构造函数且参数个数从多到少，然后是非public构造函数且参数个数有多到少
+        Arrays.sort(candidates, (o1, o2) -> {
+            int result = Boolean.compare(Modifier.isPublic(o2.getModifiers()), Modifier.isPublic(o1.getModifiers()));
+            return result != 0 ? result : Integer.compare(o2.getParameterCount(), o1.getParameterCount());
+        });
 
+        for (Constructor<?> candidate : candidates) {
+            try {
+                // 这里去解析参数，会进行对应的类型转换，如果是引用别的 bean 会进行 getBean() 获取其实例
+                // 如果是构造器依赖注入没有找到对应类型的 bean，会抛出异常，去解析下一个构造器的参数
+                argsToUse = createArgumentArray(beanName, beanDefinition.getBeanClass(), candidate.getParameterTypes(),
+                        getParameters(candidate), resolvedValues, autowiring);
+            } catch (BeansException e) {
+                // 由于自动注入，有没有找到的 bean 引用
+                log.warn("构造器依赖自动注入，有参数没找到，跳过本次循环，进行下一次查找");
+                continue;
+            }
+
+            if (beanDefinition.hasConstructorArgumentValues() && argsToUse.length == minNrOfArgs) {
+                constructorToUse = candidate;
+                // 指定了构造器参数，并且数量对应，跳出循环直接使用
+                log.debug("根据指定的参数，找到了对应构造器，直接跳出循环使用");
+                break;
+            } else {
+                constructorToUse = candidate;
+                // 构造器依赖注入，所需的 bean 全部找到，跳出循环直接使用
+                log.debug("构造器依赖自动注入，需要的 bean 全部找到，跳出循环直接使用");
+                break;
+            }
         }
 
-//        // 定义了构造器参数
-//        if (beanDefinition.hasConstructorArgumentValues()) {
-//
-//            for (Constructor<?> candidate : candidates) {
-//                if (candidate.getParameterCount() == minNrOfArgs) {
-//
-//                }
-//            }
-//        }
         // 没有找到匹配的构造函数，抛出异常
         if (constructorToUse == null) {
             throw new IllegalStateException("Could not find matching constructor");
@@ -83,13 +101,8 @@ public class ConstructorResolver {
     /**
      * 获取函数的参数名称
      */
-    private String[] getParameters(Constructor<?> constructor) {
-        Parameter[] parameters = constructor.getParameters();
-        String[] paramNames = new String[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            paramNames[i] = parameters[i].getName();
-        }
-        return paramNames;
+    private List<String> getParameters(Constructor<?> constructor) {
+        return LocalVariableTableParameterNameDiscoverer.getConstructorParamNames(constructor);
     }
 
     /**
@@ -118,7 +131,7 @@ public class ConstructorResolver {
      * @param resolvedValues 解析过后的值
      * @return 类型转换过后的构造器参数数组
      */
-    private Object[] createArgumentArray(String beanName, Class<?> beanClass, Class<?>[] paramTypes, String[] paramNames, ConstructorArgumentValues resolvedValues, boolean autowiring) {
+    private Object[] createArgumentArray(String beanName, Class<?> beanClass, Class<?>[] paramTypes, List<String> paramNames, ConstructorArgumentValues resolvedValues, boolean autowiring) {
         Object[] args = new Object[paramTypes.length];
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> paramType = paramTypes[i];
@@ -132,7 +145,11 @@ public class ConstructorResolver {
                     throw new IllegalStateException("Ambiguous argument values for parameter of type [" + paramType.getName() +
                             "] - did you specify the correct bean references as arguments?");
                 }
-                args[i] = resolveAutowireArgument(beanName, beanClass, i, paramType, paramNames[i]);
+                Object argument = resolveAutowireArgument(beanName, beanClass, i, paramType, paramNames.get(i));
+                if (argument == null) {
+                    throw new BeansException("No such bean " + paramNames.get(i));
+                }
+                args[i] = argument;
             }
         }
         return args;

@@ -1,8 +1,8 @@
 package com.leisurexi.tiny.spring.beans.factory;
 
+import cn.hutool.core.convert.Convert;
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
 import com.leisurexi.tiny.spring.beans.factory.config.BeanPostProcessor;
-import com.leisurexi.tiny.spring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import com.leisurexi.tiny.spring.beans.factory.config.Scope;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition;
 import lombok.extern.slf4j.Slf4j;
@@ -42,46 +42,57 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
     @Override
-    public Object getBean(String name) {
-        return doGetBean(name);
+    public Object getBean(String beanName) {
+        return doGetBean(beanName, null);
+    }
+
+    @Override
+    public <T> T getBean(String beanName, Class<T> requiredType) {
+        return doGetBean(beanName, requiredType);
     }
 
     /**
      * 真正去获取 bean 的方法
      *
-     * @param name bean的名称
+     * @param beanName bean的名称
      * @return bean 实例
      * @since 0.0.2
      */
-    private Object doGetBean(String name) {
-        BeanDefinition beanDefinition = getBeanDefinition(name);
+    private <T> T doGetBean(String beanName, Class<T> requiredType) {
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
         if (beanDefinition == null) {
-            throw new BeansException("no such bean definition for " + name);
+            throw new BeansException("no such bean definition for " + beanName);
         }
-        Object bean = singletonObjects.get(name);
+        Object bean = singletonObjects.get(beanName);
         // 判断单例缓存中是否存在需要获取的 bean
         if (bean != null) {
-            log.debug("hit singleton cache, beanName: [{}]", name);
-            return bean;
+            log.debug("hit singleton cache, beanName: [{}]", beanName);
+        } else {
+            if (beanDefinition.isSingleton()) {
+                // 单例作用域，创建完实例缓存起来
+                bean = createBean(beanName, beanDefinition);
+                singletonObjects.put(beanName, beanDefinition);
+            } else if (beanDefinition.isPrototype()) {
+                // 原型作用域，每次新创建一个实例
+                bean = createBean(beanName, beanDefinition);
+            } else {
+                // 自定义作用域
+                String scopeName = beanDefinition.getScope();
+                Scope scope = scopes.get(scopeName);
+                if (scope == null) {
+                    throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
+                }
+                bean = scope.get(scopeName, () -> createBean(beanName, beanDefinition));
+            }
         }
 
-        if (beanDefinition.isSingleton()) {
-            // 单例作用域，创建完实例缓存起来
-            bean = createBean(name, beanDefinition);
-            singletonObjects.put(name, beanDefinition);
-        } else if (beanDefinition.isPrototype()) {
-            // 原型作用域，每次新创建一个实例
-            bean = createBean(name, beanDefinition);
-        } else {
-            // 自定义作用域
-            String scopeName = beanDefinition.getScope();
-            Scope scope = scopes.get(scopeName);
-            if (scope == null) {
-                throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
-            }
-            bean = scope.get(scopeName, () -> createBean(name, beanDefinition));
+        // 需要 bean 的类型不为空，进行类型转换
+        if (requiredType != null) {
+            // 通过第三方工具类进行类型转换，失败会抛出异常
+            T convertBean = Convert.convert(requiredType, bean);
+            return convertBean;
         }
-        return bean;
+        return (T) bean;
     }
 
     /**

@@ -120,9 +120,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             scope = "singleton";
         }
         String autowire = element.getAttribute("autowire");
+        if (Strings.isNullOrEmpty(autowire)) {
+            autowire = "no";
+        }
         int autowireMode = AUTOWIRE_NO;
         if (autowire != null) {
-            if ("no".equals(autowire) || "byName".equals(autowire) || "byType".equals(autowire) || "constructor".equals(autowire)) {
+            if (!"no".equals(autowire) && !"byName".equals(autowire) && !"byType".equals(autowire) && !"constructor".equals(autowire)) {
                 throw new IllegalArgumentException("Attribute autowire only support 'no' or 'byName' or 'byType' or 'constructor'");
             }
             switch (autowire) {

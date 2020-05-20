@@ -12,9 +12,28 @@ public interface BeanFactory {
     /**
      * 按照名称获取 bean
      *
-     * @param name bean 名称
-     * @return bean 实例
+     * @param beanName bean 名称
+     * @return bean 的实例
      */
-    Object getBean(String name);
+    Object getBean(String beanName);
+
+    /**
+     * 按照类型获取 bean
+     *
+     * @param requiredType bean 的类型
+     * @return bean 的实例
+     * @since 0.0.3
+     */
+    <T> T getBean(Class<T> requiredType);
+
+    /**
+     * 按照名称和类型获取 bean
+     *
+     * @param beanName bean 的名称
+     * @param requiredType bean 的类型
+     * @return bean 的类型
+     * @since 0.0.3
+     */
+    <T> T getBean(String beanName, Class<T> requiredType);
 
 }

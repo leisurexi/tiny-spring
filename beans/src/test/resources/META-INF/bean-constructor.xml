@@ -5,9 +5,6 @@
         <constructor-arg index="0" value="1"/>
         <constructor-arg index="1" value="leisurexi"/>
         <constructor-arg index="2" ref="city"/>
-<!--        <property name="id" value="1"/>-->
-<!--        <property name="name" value="leisurexi"/>-->
-<!--        <property name="city" ref="city"/>-->
     </bean>
 
     <bean id="city" class="com.leisurexi.tiny.spring.beans.domain.City">
@@ -15,5 +12,4 @@
         <property name="name" value="北京"/>
     </bean>
 
-    <bean id="thread-local-user" class="com.leisurexi.tiny.spring.beans.domain.User" scope="thread-local"/>
 </beans>

@@ -34,6 +34,12 @@ public class DependencyDescriptor {
      */
     private int parameterIndex;
 
+    public DependencyDescriptor(Class<?> declaringClass, Class<?> parameterTypes, String parameterName) {
+        this.declaringClass = declaringClass;
+        this.parameterTypes = parameterTypes;
+        this.parameterName = parameterName;
+    }
+
     public DependencyDescriptor(Class<?> declaringClass, Class<?> parameterTypes, String parameterName, int parameterIndex) {
         this.declaringClass = declaringClass;
         this.parameterTypes = parameterTypes;

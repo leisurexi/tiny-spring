@@ -23,6 +23,7 @@
         <junjt.version>4.12</junjt.version>
         <guava.version>28.2-jre</guava.version>
         <hutool.version>4.5.11</hutool.version>
+        <asm-tool.version>0.0.2</asm-tool.version>
     </properties>
 
     <dependencies>
@@ -100,6 +101,11 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>asm-tool</artifactId>
+                <version>${asm-tool.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

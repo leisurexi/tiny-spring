@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+
+    <bean id="thread-local-user" class="com.leisurexi.tiny.spring.beans.domain.User" scope="thread-local"/>
+
+</beans>

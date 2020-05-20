@@ -11,5 +11,11 @@
 
     <artifactId>beans</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>asm-tool</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

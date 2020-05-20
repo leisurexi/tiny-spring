@@ -45,6 +45,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             beanNames = new ArrayList<>();
         }
         beanNames.add(beanName);
+        allBeanNamesByType.put(beanDefinition.getBeanClass(), beanNames);
     }
 
     @Override
@@ -62,9 +63,20 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return doResolveDependency(descriptor, requestingBeanName);
     }
 
+    @Override
+    public <T> T getBean(Class<T> requiredType) {
+        // 找到该类型的所有 bean
+        List<String> candidateNames = beanNamesForType(requiredType);
+        // 默认返回第一个 bean
+        return candidateNames.isEmpty() ? null : getBean(candidateNames.get(0), requiredType);
+    }
+
     public Object doResolveDependency(DependencyDescriptor descriptor, String requestingBeanName) {
         Class<?> type = descriptor.getDependencyType();
         Map<String, Object> matchingBeans = findAutowireCandidates(requestingBeanName, type, descriptor);
+        if (matchingBeans.isEmpty()) {
+            return null;
+        }
         if (matchingBeans.size() > 1) {
             // 符合条件的 bean 有多个
             Object result = matchingBeans.get(descriptor.getParameterName());
@@ -102,8 +114,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     /**
      * 根据类型找到所有符合条件的 bean 名称
      */
-    private List<String> beanNamesForType(Class<?> requireType) {
-        return this.allBeanNamesByType.get(requireType);
+    private List<String> beanNamesForType(Class<?> requiredType) {
+        List<String> beanNames = this.allBeanNamesByType.get(requiredType);
+        return beanNames == null ? Collections.emptyList() : beanNames;
     }
 
 

@@ -57,4 +57,20 @@ public class PropertyValues implements Iterable<PropertyValue> {
     public Stream<PropertyValue> stream() {
         return getPropertyValues().stream();
     }
+
+    /**
+     * 是否包含此属性
+     *
+     * @param propertyName 属性名称
+     * @return {@code true} 包含此属性，{@code false} 不包含此属性
+     */
+    public boolean contains(String propertyName) {
+        for (PropertyValue propertyValue : this.propertyValues) {
+            if (propertyValue.getName().equals(propertyName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
