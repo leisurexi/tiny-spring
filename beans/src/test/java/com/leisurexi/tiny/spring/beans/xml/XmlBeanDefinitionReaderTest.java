@@ -101,4 +101,22 @@ public class XmlBeanDefinitionReaderTest {
         log.info("user: [{}]", user);
     }
 
+    @Test
+    public void initializeTest() {
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+        beanDefinitionReader.loadBeanDefinitions("META-INF/bean-initialize.xml");
+        User user = (User) beanFactory.getBean("user");
+        log.info("user: [{}]", user);
+    }
+
+    @Test
+    public void circularDependenceTest() {
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+        beanDefinitionReader.loadBeanDefinitions("META-INF/bean-circular-dependence.xml");
+        User user = (User) beanFactory.getBean("user");
+        log.info("user: [{}]", user);
+    }
+
 }

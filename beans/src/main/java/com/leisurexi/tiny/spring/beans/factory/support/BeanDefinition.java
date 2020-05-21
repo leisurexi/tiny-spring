@@ -2,12 +2,9 @@ package com.leisurexi.tiny.spring.beans.factory.support;
 
 import com.leisurexi.tiny.spring.beans.PropertyValues;
 import com.leisurexi.tiny.spring.beans.factory.config.ConstructorArgumentValues;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Constructor;
 
 /**
  * bean 定义的元信息
@@ -16,9 +13,7 @@ import java.lang.reflect.Constructor;
  * @date: 2020-04-04 14:21
  * @since 0.0.1
  */
-@Getter
-@Setter
-@ToString
+@Data
 @Slf4j
 public class BeanDefinition {
 
@@ -89,6 +84,13 @@ public class BeanDefinition {
      * @since 0.0.3
      */
     private ConstructorArgumentValues constructorArgumentValues;
+
+    /**
+     * bean 初始化回调的方法名称
+     *
+     * @since 0.0.3
+     */
+    private String initMethodName;
 
     /**
      * bean 的作用域是否是单例

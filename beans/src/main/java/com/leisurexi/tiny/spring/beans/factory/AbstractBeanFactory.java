@@ -29,17 +29,25 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     /**
      * 单例 bean 的缓存，key 为 bean 的名称，value 是 bean 的实例
      */
-    private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+    protected final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+
+    /**
+     * 单例 bean 的 ObjectFactory 的缓存，key 为 bean 的名称，value 是 ObjectFactory 的实例
+     * 为解决循环依赖使用
+     *
+     * @since 0.0.3
+     */
+    protected final Map<String, ObjectFactory<?>> singletonFactories = new ConcurrentHashMap<>(256);
 
     /**
      * 自定义作用域保存容器
      */
-    private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
+    protected final Map<String, Scope> scopes = new LinkedHashMap<>(8);
 
     /**
      * 保存注册的 bean 的扩展接口
      */
-    private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
+    protected final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
     @Override
     public Object getBean(String beanName) {
@@ -63,7 +71,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         if (beanDefinition == null) {
             throw new BeansException("no such bean definition for " + beanName);
         }
-        Object bean = singletonObjects.get(beanName);
+        Object bean = getSingleton(beanName);
         // 判断单例缓存中是否存在需要获取的 bean
         if (bean != null) {
             log.debug("hit singleton cache, beanName: [{}]", beanName);
@@ -71,7 +79,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             if (beanDefinition.isSingleton()) {
                 // 单例作用域，创建完实例缓存起来
                 bean = createBean(beanName, beanDefinition);
-                singletonObjects.put(beanName, beanDefinition);
+                // 添加单例 bean 到缓存中
+                addSingleton(beanName, bean);
             } else if (beanDefinition.isPrototype()) {
                 // 原型作用域，每次新创建一个实例
                 bean = createBean(beanName, beanDefinition);
@@ -128,6 +137,55 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      */
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return this.beanPostProcessors;
+    }
+
+    /**
+     * 获取单例 bean 的缓存
+     *
+     * @param beanName
+     * @return
+     */
+    protected Object getSingleton(String beanName) {
+        Object singletonObject = singletonObjects.get(beanName);
+        if (singletonObject == null) {
+            ObjectFactory<?> singletonFactory = singletonFactories.get(beanName);
+            if (singletonFactory != null) {
+                singletonObject = singletonFactory.getObject();
+            }
+        }
+        return singletonObject;
+    }
+
+
+    /**
+     * 将给定的单例对象添加到该工厂的单例缓存中
+     *
+     * @param beanName         bean 的名称
+     * @param singletonFactory 单例对象
+     */
+    protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
+        synchronized (this.singletonObjects) {
+            // 如果已经初始化完成的单例 bean 缓存中不存在，则添加 singletonFactory
+            // 到单例工厂缓存中
+            if (!this.singletonObjects.containsKey(beanName)) {
+                this.singletonFactories.put(beanName, singletonFactory);
+            }
+        }
+    }
+
+    /**
+     * 将给定的单例对象添加到缓存中
+     *
+     * @param beanName        bean 的名称
+     * @param singletonObject 单例对象
+     */
+    protected void addSingleton(String beanName, Object singletonObject) {
+        synchronized (this.singletonObjects) {
+            // 将 bean 实例缓存起来
+            this.singletonObjects.put(beanName, singletonObject);
+            // 移除 bean 的工厂
+            this.singletonFactories.remove(beanName);
+        }
     }
 
     /**

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+
+    <bean id="user" class="com.leisurexi.tiny.spring.beans.domain.User">
+        <property name="id" value="1"/>
+        <property name="name" value="leisurexi"/>
+        <property name="city" ref="city"/>
+    </bean>
+
+    <bean id="city" class="com.leisurexi.tiny.spring.beans.domain.City">
+        <property name="id" value="1"/>
+        <property name="name" value="北京"/>
+        <property name="user" ref="user" />
+    </bean>
+
+</beans>

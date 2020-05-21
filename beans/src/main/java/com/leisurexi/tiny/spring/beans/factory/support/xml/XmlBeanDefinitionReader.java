@@ -140,10 +140,15 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     break;
             }
         }
+
+        // bean 初始化方法名称
+        String initMethodName = element.getAttribute("init-method");
+
         BeanDefinition beanDefinition = new BeanDefinition();
         beanDefinition.setBeanClassName(className);
         beanDefinition.setScope(scope);
         beanDefinition.setAutowireMode(autowireMode);
+        beanDefinition.setInitMethodName(initMethodName);
         try {
             beanDefinition.setBeanClass(Class.forName(className));
         } catch (ClassNotFoundException e) {

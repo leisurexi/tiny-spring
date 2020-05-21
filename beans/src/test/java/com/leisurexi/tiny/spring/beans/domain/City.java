@@ -11,10 +11,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class City {
 
     private Long id;
     private String name;
+    private User user;
 
+    @Override
+    public String toString() {
+        return "City{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user.hashCode() +
+                '}';
+    }
 }

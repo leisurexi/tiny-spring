@@ -70,3 +70,13 @@ public void scopeTest() throws InterruptedException {
 ```
 
 全部代码可以在 `beans` 模块的 `test` 包下找到。
+
+#### 0.0.3
+
+* 增加了 `bean` 的实例化前后生命周期方法回调。
+* 增加了构造器自动注入的功能。
+* 增加了属性填充阶段，`bean` 的属性赋值前生命周期方法回调。
+* 增加了属性按照类型或名称自动注入的功能。
+* 解决了了属性自动注入，循环依赖的问题。
+* 增加了 `bean` 的初始化阶段，`bean` 的初始化前和初始化后生命周期回调方法，以及实现 `InitialingBean` 接口的 `afterPropertiesSet()` 和自定义初始化方法的调用。
+

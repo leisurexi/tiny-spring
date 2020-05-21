@@ -2,6 +2,7 @@ package com.leisurexi.tiny.spring.beans.factory;
 
 import cn.hutool.core.bean.BeanException;
 import cn.hutool.core.util.ReflectUtil;
+import com.google.common.base.Strings;
 import com.leisurexi.tiny.spring.beans.PropertyValue;
 import com.leisurexi.tiny.spring.beans.PropertyValues;
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,6 +56,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
         // 创建 bean 的实例阶段
         Object bean = createBeanInstance(beanName, beanDefinition);
+        // 是否要提前曝光 bean
+        boolean earlySingletonExposure = beanDefinition.isSingleton();
+        if (earlySingletonExposure) {
+            addSingletonFactory(beanName, () -> bean);
+        }
         // 属性填充阶段
         populateBean(beanName, bean, beanDefinition);
         Object exposedObject = bean;
@@ -84,13 +92,50 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 1.如果 bean 实现了 InitializingBean 接口，先调用其重写的 afterPropertiesSet()
      * 2.如果在XML中定义了 init-method 属性，调用其指定的方法，不能是静态方法
      *
-     * @param beanName bean 的名称
-     * @param wrapperBean bean 的实例
+     * @param beanName       bean 的名称
+     * @param bean           bean 的实例
      * @param beanDefinition bean 的定义元信息
      * @since 0.0.3
      */
-    protected void invokeInitMethods(String beanName, Object wrapperBean, BeanDefinition beanDefinition) {
+    protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) {
+        // bean 是否实现了 InitializingBean 接口
+        boolean isInitializingBean = (bean instanceof InitializingBean);
+        if (isInitializingBean) {
+            // 进行强转并调用 afterPropertiesSet()
+            ((InitializingBean) bean).afterPropertiesSet();
+        }
+        // bean 的初始化方法不为空
+        if (!Strings.isNullOrEmpty(beanDefinition.getInitMethodName())) {
+            invokeCustomInitMethod(beanName, bean, beanDefinition);
+        }
+    }
 
+    /**
+     * 调用自定义初始化方法
+     *
+     * @param beanName       bean 的名称
+     * @param bean           bean 的实例
+     * @param beanDefinition bean 的定义元信息
+     */
+    protected void invokeCustomInitMethod(String beanName, Object bean, BeanDefinition beanDefinition) {
+        String initMethodName = beanDefinition.getInitMethodName();
+        Class<?> clazz = bean.getClass();
+        Method method = null;
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method m : methods) {
+            if (m.getName().equals(initMethodName)) {
+                method = m;
+            }
+        }
+        if (method == null) {
+            throw new BeanException("Could not find an init method named '" + initMethodName + "' with bean name '" + beanName + "'");
+        }
+        method.setAccessible(true);
+        try {
+            method.invoke(bean, null);
+        } catch (Exception e) {
+            throw new BeanException(e);
+        }
     }
 
     /**
