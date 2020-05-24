@@ -6,7 +6,7 @@
     <groupId>com.leisurexi</groupId>
     <artifactId>tiny-spring</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>tiny-spring</name>
     <description>A tiny spring for study.</description>
 
