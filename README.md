@@ -20,9 +20,7 @@
 git checkout step-1-basic-ioc-container
 ```
 
-来获得这一版本。或者可以通过 IntelliJ IDEA 工具来切换分支，如下图所示：
-
-![](http://ww1.sinaimg.cn/large/006Vpl27gy1gf3kvly17kj30bu07z0sy.jpg)
+来获得这一版本。或者可以通过 IntelliJ IDEA 工具来切换分支，可以点击链接查看图片，[切换分支图片](http://ww1.sinaimg.cn/large/006Vpl27gy1gf3kvly17kj30bu07z0sy.jpg)。
 
 > `master` 分支，一直保持最新的代码。
 >
