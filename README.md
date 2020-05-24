@@ -20,6 +20,6 @@
 git checkout step-1-basic-ioc-container
 ```
 
-来获得这一版本。版本历史见[`changelog.md`](https://github.com/code4craft/tiny-spring/blob/master/changelog.md)。
+来获得这一版本。版本历史见[`changelog.md`](https://github.com/leisurexi/tiny-spring/blob/master/changelog.md)。
 
 > `master` 分支，一直保持最新的代码。
