@@ -14,9 +14,10 @@
 
 # 使用
 
-`tiny-spring` 是逐步进行构建的，里程碑版本我都使用了 `git tag` 来管理。例如，最开始的 `tag` 是 `git checkout step-1-basic-ioc-container`，那么可以使用
+`tiny-spring` 是逐步进行构建的，里程碑版本我都使用了 **分支** 来管理。例如，最开始的分支是  `step-1-basic-ioc-container`，那么可以使用
 
 ```shell
 git checkout step-1-basic-ioc-container
 ```
 
+> `master` 分支，一直保持最新的代码。
