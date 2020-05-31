@@ -1,0 +1,94 @@
+package com.leisurexi.tiny.spring.context.support;
+
+import com.leisurexi.tiny.spring.beans.factory.DefaultListableBeanFactory;
+import com.leisurexi.tiny.spring.beans.factory.config.BeanPostProcessor;
+import com.leisurexi.tiny.spring.context.ApplicationContext;
+
+import java.util.List;
+
+/**
+ * @author: leisurexi
+ * @date: 2020-05-31 19:20
+ * @since 0.0.4
+ */
+public abstract class AbstractApplicationContext implements ApplicationContext {
+
+    /**
+     * 当前上下文的 bean factory
+     */
+    private DefaultListableBeanFactory beanFactory;
+
+    /**
+     * 上下文刷新方法，也可以理解为上下文启动的方法
+     */
+    public void refresh() {
+        // 刷新 beanFactory
+        refreshBeanFactory();
+        // 注册 bean 的后置处理器
+        registerBeanPostProcessors(beanFactory);
+        // 完成 beanFactory 的初始化
+        finishBeanFactoryInitialization(beanFactory);
+    }
+
+    /**
+     * 完成 beanFactory 的初始化
+     *
+     * @param beanFactory bean 工厂
+     */
+    protected void finishBeanFactoryInitialization(DefaultListableBeanFactory beanFactory) {
+        // 提前初始化单例 bean
+        beanFactory.preInstantiateSingletons();
+    }
+
+    /**
+     * 注册 bean 的后置处理器
+     *
+     * @param beanFactory bean 工厂
+     */
+    protected void registerBeanPostProcessors(DefaultListableBeanFactory beanFactory) {
+        List<String> beanNames = beanFactory.beanNamesForType(BeanPostProcessor.class);
+        for (String beanName : beanNames) {
+            beanFactory.addBeanPostProcessor(getBean(beanName, BeanPostProcessor.class));
+        }
+    }
+
+    /**
+     * 刷新 BeanFactory，这里比较粗暴，直接 new 一个 DefaultListableBeanFactory
+     * 赋值给 beanFactory
+     */
+    protected void refreshBeanFactory() {
+        beanFactory = new DefaultListableBeanFactory();
+        loadBeanDefinitions(beanFactory);
+    }
+
+    /**
+     * 加载 bean 的定义元信息，模板方法由子类实现
+     *
+     * @param beanFactory bean 的工厂
+     */
+    protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory);
+
+    //---------------------------------------------------------------------
+    // 实现 BeanFactory 接口，方法实现全部委托给内部 beanFactory
+    //---------------------------------------------------------------------
+
+    @Override
+    public Object getBean(String beanName) {
+        return this.beanFactory.getBean(beanName);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) {
+        return this.beanFactory.getBean(requiredType);
+    }
+
+    @Override
+    public <T> T getBean(String beanName, Class<T> requiredType) {
+        return this.beanFactory.getBean(beanName, requiredType);
+    }
+
+    @Override
+    public DefaultListableBeanFactory getBeanFactory() {
+        return this.beanFactory;
+    }
+}

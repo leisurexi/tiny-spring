@@ -95,9 +95,34 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             Node node = childNodes.item(i);
             if (node instanceof Element) {
                 Element element = Element.class.cast(node);
-                processBeanDefinition(element);
+                if (element.getNodeName().equals("bean")) {
+                    processBeanDefinition(element);
+                } else if (element.getNodeName().equals("context:component-scan")) {
+                    processContextComponentScan(element);
+                }
             }
         }
+    }
+
+    /**
+     * 解析 context:component-scan 节点的 base-package 值
+     *
+     * @param element 节点
+     */
+    protected void processContextComponentScan(Element element) {
+        String basePackage = element.getAttribute("base-package");
+        if (Strings.isNullOrEmpty(basePackage)) {
+            throw new IllegalStateException("base-package attribute must bo not bull");
+        }
+        doScan(basePackage);
+    }
+
+    /**
+     * 在指定路径下扫描
+     *
+     * @param basePackage
+     */
+    private void doScan(String basePackage) {
     }
 
     /**

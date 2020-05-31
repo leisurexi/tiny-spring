@@ -6,12 +6,13 @@
     <groupId>com.leisurexi</groupId>
     <artifactId>tiny-spring</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <name>tiny-spring</name>
     <description>A tiny spring for study.</description>
 
     <modules>
         <module>beans</module>
+        <module>context</module>
     </modules>
 
     <properties>

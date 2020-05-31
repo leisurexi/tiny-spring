@@ -4,8 +4,11 @@ import com.leisurexi.tiny.spring.beans.PropertyValue;
 import com.leisurexi.tiny.spring.beans.PropertyValues;
 import com.leisurexi.tiny.spring.beans.domain.User;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition;
+import com.leisurexi.tiny.spring.beans.factory.support.xml.XmlBeanDefinitionReader;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author: leisurexi
@@ -29,6 +32,13 @@ public class BeanFactoryTest {
         log.info(user.toString());
     }
 
-
+    @Test
+    public void beanNamesForTypeTest() {
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions("META-INF/bean-initialize.xml");
+        List<String> beanNames = beanFactory.beanNamesForType(InitializingBean.class);
+        log.info(String.valueOf(beanNames));
+    }
 
 }

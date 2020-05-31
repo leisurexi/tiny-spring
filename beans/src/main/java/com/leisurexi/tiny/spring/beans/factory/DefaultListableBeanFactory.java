@@ -112,12 +112,31 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
     /**
-     * 根据类型找到所有符合条件的 bean 名称
+     * 找到所有相同类型或者其子类型的 bean 名称
+     *
+     * @since 0.0.4
      */
-    private List<String> beanNamesForType(Class<?> requiredType) {
-        List<String> beanNames = this.allBeanNamesByType.get(requiredType);
-        return beanNames == null ? Collections.emptyList() : beanNames;
+    public List<String> beanNamesForType(Class<?> requiredType) {
+        List<String> beanNames = new ArrayList<>();
+        for (Map.Entry<Class<?>, List<String>> entry : allBeanNamesByType.entrySet()) {
+            if (requiredType.isAssignableFrom(entry.getKey())) {
+                beanNames.addAll(entry.getValue());
+            }
+        }
+        return beanNames;
     }
 
+    /**
+     * 提前初始化单例 bean
+     */
+    public void preInstantiateSingletons() {
+        List<String> beanNames = new ArrayList<>(beanDefinitionNames);
+        for (String beanName : beanNames) {
+            BeanDefinition beanDefinition = getBeanDefinition(beanName);
+            if (beanDefinition.isSingleton()) {
+                getBean(beanName);
+            }
+        }
+    }
 
 }
