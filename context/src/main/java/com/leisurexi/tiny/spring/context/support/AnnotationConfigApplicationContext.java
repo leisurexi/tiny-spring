@@ -4,13 +4,13 @@ import cn.hutool.core.util.ClassUtil;
 import com.google.common.base.Strings;
 import com.leisurexi.tiny.spring.beans.factory.DefaultListableBeanFactory;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition;
+import com.leisurexi.tiny.spring.context.annotation.AnnotationConfigUtils;
 import com.leisurexi.tiny.spring.context.annotation.Component;
 import com.leisurexi.tiny.spring.context.annotation.Scope;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCOPE_SINGLETON;
 
@@ -40,7 +40,6 @@ public class AnnotationConfigApplicationContext extends AbstractApplicationConte
      * @return 符合条件的组件定义元信息集合
      */
     private void doScan(String basePackage) {
-        DefaultListableBeanFactory beanFactory = getBeanFactory();
         // 获取路径下，所有标注了 @Component 注解的类
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(basePackage, Component.class);
         for (Class<?> clazz : classes) {

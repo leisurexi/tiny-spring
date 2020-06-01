@@ -41,7 +41,7 @@ public class User implements InitializingBean {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", city=" + city.hashCode() +
+                ", city=" + (city == null ? null : city.hashCode()) +
                 '}';
     }
 }

@@ -30,7 +30,7 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
      *
      * @param bean     bean 的实例
      * @param beanName bean 的名称
-     * @return {@code false} 跳过后面流程，{@code true} 按默认历程继续执行
+     * @return {@code false} 跳过后面流程，{@code true} 按默认流程继续执行
      */
     default boolean postProcessAfterInstantiation(Object bean, String beanName) {
         return true;
@@ -40,12 +40,12 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
      * bean 实例化后属性赋值前阶段，PropertyValues 是已经解析好的属性值，
      * 返回 {@code null} 继续使用现有属性，否则会替换 PropertyValues
      *
-     * @param propertyValues 解析好的属性值
+     * @param pvs 解析好的属性值
      * @param bean           bean 的实例
      * @param beanName       bean 的名称
      * @return {@code null} 继续使用现有的属性值，否则用返回的替换原来的 PropertyValues
      */
-    default PropertyValues postProcessProperties(PropertyValues propertyValues, Object bean, String beanName) {
+    default PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
         return null;
     }
 

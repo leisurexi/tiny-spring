@@ -49,6 +49,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
     @Override
+    public boolean containsBeanDefinition(String beanName) {
+        return this.beanDefinitionMap.containsKey(beanName);
+    }
+
+    @Override
     public int getBeanDefinitionCount() {
         return this.beanDefinitionMap.size();
     }
@@ -73,7 +78,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     public Object doResolveDependency(DependencyDescriptor descriptor, String requestingBeanName) {
         Class<?> type = descriptor.getDependencyType();
-        Map<String, Object> matchingBeans = findAutowireCandidates(requestingBeanName, type, descriptor);
+        Map<String, Object> matchingBeans = findAutowireCandidates(requestingBeanName, type);
         if (matchingBeans.isEmpty()) {
             return null;
         }
@@ -96,10 +101,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
      *
      * @param beanName    bean 的名称
      * @param requireType 需要查找的 bean 的类型
-     * @param descriptor  依赖描述符
      * @return 符合条件的 bean，beanName->bean 为 key->value 对
      */
-    private Map<String, Object> findAutowireCandidates(String beanName, Class<?> requireType, DependencyDescriptor descriptor) {
+    private Map<String, Object> findAutowireCandidates(String beanName, Class<?> requireType) {
         List<String> candidateNames = beanNamesForType(requireType);
         Map<String, Object> result = new LinkedHashMap<>(candidateNames.size());
         for (String candidateName : candidateNames) {

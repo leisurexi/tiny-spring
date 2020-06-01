@@ -1,7 +1,6 @@
 package com.leisurexi.tiny.spring.beans.factory.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 依赖描述符
@@ -10,8 +9,7 @@ import lombok.Setter;
  * @date: 2020-05-02 11:18 上午
  * @since 0.0.3
  */
-@Getter
-@Setter
+@Data
 public class DependencyDescriptor {
 
     /**

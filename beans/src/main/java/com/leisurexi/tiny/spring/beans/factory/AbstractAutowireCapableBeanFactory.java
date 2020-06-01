@@ -70,18 +70,30 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 初始化 bean
      *
      * @param beanName       bean 的名称
-     * @param exposedObject  新的 bean 实例
+     * @param bean           新的 bean 实例
      * @param beanDefinition bean 的定义元信息
      */
-    protected Object initializeBean(String beanName, Object exposedObject, BeanDefinition beanDefinition) {
-        Object wrapperBean = exposedObject;
+    protected Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        invokeAwareMethods(bean);
+        Object wrapperBean = bean;
         // 执行 bean 初始化前回调方法
-        wrapperBean = applyBeanPostProcessorsBeforeInitialization(exposedObject, beanName);
+        wrapperBean = applyBeanPostProcessorsBeforeInitialization(wrapperBean, beanName);
         // 调用 bean 的初始化方法，如实现 InitializingBean 接口，XML 中的 init-method 属性指定的方法
         invokeInitMethods(beanName, wrapperBean, beanDefinition);
         // 执行 bean 初始化后回调方法
-        wrapperBean = applyBeanPostProcessorsAfterInitialization(exposedObject, beanName);
+        wrapperBean = applyBeanPostProcessorsAfterInitialization(wrapperBean, beanName);
         return wrapperBean;
+    }
+
+    /**
+     * 调用资源接口方法
+     *
+     * @param bean bean 的实例
+     */
+    private void invokeAwareMethods(Object bean) {
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
     }
 
     /**
@@ -129,7 +141,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         method.setAccessible(true);
         try {
-            method.invoke(bean, null);
+            method.invoke(bean, new Object[0]);
         } catch (Exception e) {
             throw new BeanException(e);
         }

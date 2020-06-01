@@ -69,14 +69,14 @@ public class BeanDefinition {
     /**
      * bean 的属性
      */
-    private PropertyValues propertyValues;
+    private PropertyValues propertyValues = new PropertyValues();
 
     /**
      * bean 作用域
      *
      * @since 0.0.2
      */
-    private String scope;
+    private String scope = SCOPE_SINGLETON;
 
     /**
      * 构造函数参数
@@ -91,6 +91,14 @@ public class BeanDefinition {
      * @since 0.0.3
      */
     private String initMethodName;
+
+    public BeanDefinition() {
+
+    }
+
+    public BeanDefinition(Class<?> beanClass) {
+        setBeanClass(beanClass);
+    }
 
     /**
      * bean 的作用域是否是单例

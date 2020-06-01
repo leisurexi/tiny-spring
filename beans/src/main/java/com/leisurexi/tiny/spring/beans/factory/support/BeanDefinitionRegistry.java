@@ -19,6 +19,12 @@ public interface BeanDefinitionRegistry {
      */
     void registryBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
+    /**
+     * 是否包含某个 bean 的定义
+     *
+     * @param beanName bean 名称
+     */
+    boolean containsBeanDefinition(String beanName);
 
     /**
      * 返回当前注册中心的 bean definition 数量
