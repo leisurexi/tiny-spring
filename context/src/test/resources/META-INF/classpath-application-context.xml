@@ -6,4 +6,6 @@
         <property name="name" value="leisurexi"/>
     </bean>
 
+    <context:component-scan base-package="com.leisurexi.tiny.spring.context"/>
+
 </beans>

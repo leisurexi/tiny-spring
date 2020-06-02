@@ -1,15 +1,13 @@
 package com.leisurexi.tiny.spring.context.domain;
 
 import com.leisurexi.tiny.spring.context.annotation.Autowired;
-import com.leisurexi.tiny.spring.context.annotation.Component;
 import lombok.Data;
 
 /**
  * @author: leisurexi
  * @date: 2020-05-31 21:30
- * @since JDK 1.8
+ * @since 0.0.4
  */
-@Component
 @Data
 public class User {
 

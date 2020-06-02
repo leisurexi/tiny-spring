@@ -2,6 +2,7 @@ package com.leisurexi.tiny.spring.context.support;
 
 import com.leisurexi.tiny.spring.beans.factory.DefaultListableBeanFactory;
 import com.leisurexi.tiny.spring.beans.factory.support.xml.XmlBeanDefinitionReader;
+import com.leisurexi.tiny.spring.context.config.ContextNamespaceHandler;
 
 /**
  * XML 应用程序上下文
@@ -38,7 +39,7 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory, new ContextNamespaceHandler());
         for (int i = 0; i < configLocations.length; i++) {
             String configLocation = configLocations[i];
             // 加载配置文件中 bean 的定义

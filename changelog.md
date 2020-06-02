@@ -32,7 +32,7 @@ public void test() {
 }
 ```
 
-## 2.step-1-bean的作用域
+## 2. step-2-bean的作用域
 
 ```shell
 git checkout step-2-bean-scope
@@ -94,7 +94,7 @@ public void scopeTest() throws InterruptedException {
 }
 ```
 
-## 3.step-3-依赖注入
+## 3. step-3-依赖注入
 
 * 增加了 `bean` 的实例化前后生命周期方法回调。
 * 增加了构造器自动注入的功能，默认按照类型注入，如果有多个类型匹配的 `bean` 就寻找与参数名相匹配的 `bean`。
@@ -105,4 +105,44 @@ public void scopeTest() throws InterruptedException {
 * 增加了 `bean` 的初始化阶段，`bean` 的初始化前和初始化后生命周期回调方法，以及实现 `InitialingBean` 接口的 `afterPropertiesSet()` 和自定义初始化方法的调用。
 
 > 测试代码太多，这里就不展示了，大家可以在 `XmlBeanDefinitionReaderTest` 类下找到所有的测试用例。
+
+## 4. strp-4-ApplicationContext 登场
+
+现在 `BeanFactory` 的功能齐全了，但是每次使用都需要手动调用 `XmlBeanDefinitionReader#loadBeanDefinitions(String)`。于是我们引入熟悉的 `ApplicationContext` 接口，并在 `AbstractApplicationContext` 的 `refresh()` 方法中进行bean的初始化工作；同时添加注解 `@Autowired`、`@Component`、`@Scope`，可以使用 `<context:component-scan>` 标签来指定包路径实现自动扫包，`ApplicationContext` 会自动把标注了 `@Component` 的类注册为 `bean`，同时支持在 `bean` 的属性上标注 `@Autowired` 注解来实现自动注入。下面是一个使用示例：
+
+XML 文件：
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<beans>
+
+    <bean id="user" class="com.leisurexi.tiny.spring.context.domain.User">
+        <property name="id" value="1"/>
+        <property name="name" value="leisurexi"/>
+    </bean>
+
+    <context:component-scan base-package="com.leisurexi.tiny.spring.context"/>
+
+</beans>
+```
+
+实体类大家自己去 `context` 模块的测试文件夹下找，然后我们看一下测试代码：
+
+```java
+@Slf4j
+public class ClassPathApplicationContextTest {
+
+    @Test
+    public void test() {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("META-INF/classpath-application-context.xml");
+        User user = context.getBean("user", User.class);
+        log.info(user.toString());
+    }
+
+}
+```
+
+
+
+
 

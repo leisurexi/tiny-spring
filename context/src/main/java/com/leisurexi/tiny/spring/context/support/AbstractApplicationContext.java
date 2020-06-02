@@ -63,8 +63,8 @@ public abstract class AbstractApplicationContext implements ApplicationContext, 
      * 赋值给 beanFactory
      */
     protected void refreshBeanFactory() {
-        beanFactory = new DefaultListableBeanFactory();
-        loadBeanDefinitions(beanFactory);
+        this.beanFactory = new DefaultListableBeanFactory();
+        loadBeanDefinitions(this.beanFactory);
     }
 
     /**

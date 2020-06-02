@@ -9,7 +9,7 @@ import com.leisurexi.tiny.spring.beans.io.ResourceLoader;
  */
 public abstract class AbstractBeanDefinitionReader implements BeanDefinitionReader {
 
-    private final BeanDefinitionRegistry registry;
+    protected final BeanDefinitionRegistry registry;
     private ResourceLoader resourceLoader;
 
     public AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {

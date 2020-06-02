@@ -32,8 +32,15 @@ import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.*;
 @Slf4j
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
+    private NamespaceHandler[] namespaceHandlers;
+
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
+    }
+
+    public XmlBeanDefinitionReader(BeanDefinitionRegistry registry, NamespaceHandler... namespaceHandlers) {
+        super(registry);
+        this.namespaceHandlers = namespaceHandlers;
     }
 
     @Override
@@ -97,32 +104,29 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 Element element = Element.class.cast(node);
                 if (element.getNodeName().equals("bean")) {
                     processBeanDefinition(element);
-                } else if (element.getNodeName().equals("context:component-scan")) {
-                    processContextComponentScan(element);
+                } else {
+                    parseCustomElement(registry, element);
                 }
             }
         }
     }
 
     /**
-     * 解析 context:component-scan 节点的 base-package 值
+     * 处理自定义命名空间
      *
-     * @param element 节点
+     * @param registry bean 注册中心
+     * @param element  节点
+     * @since 0.0.4
      */
-    protected void processContextComponentScan(Element element) {
-        String basePackage = element.getAttribute("base-package");
-        if (Strings.isNullOrEmpty(basePackage)) {
-            throw new IllegalStateException("base-package attribute must bo not bull");
+    private void parseCustomElement(BeanDefinitionRegistry registry, Element element) {
+        // 遍历 namespaceHandlers 寻找命名空间和节点命名空间开头一样的，然后去处理该节点
+        if (namespaceHandlers != null) {
+            for (NamespaceHandler namespaceHandler : namespaceHandlers) {
+                if (element.getNodeName().equals(namespaceHandler.namespace())) {
+                    namespaceHandler.parse(registry, element);
+                }
+            }
         }
-        doScan(basePackage);
-    }
-
-    /**
-     * 在指定路径下扫描
-     *
-     * @param basePackage
-     */
-    private void doScan(String basePackage) {
     }
 
     /**
