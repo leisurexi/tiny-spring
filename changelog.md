@@ -96,6 +96,10 @@ public void scopeTest() throws InterruptedException {
 
 ## 3. step-3-依赖注入
 
+```shell
+git checkout step-3-dependency-injection
+```
+
 * 增加了 `bean` 的实例化前后生命周期方法回调。
 * 增加了构造器自动注入的功能，默认按照类型注入，如果有多个类型匹配的 `bean` 就寻找与参数名相匹配的 `bean`。
 * 增加了属性填充阶段，`bean` 的属性赋值前生命周期方法回调。
@@ -106,7 +110,11 @@ public void scopeTest() throws InterruptedException {
 
 > 测试代码太多，这里就不展示了，大家可以在 `XmlBeanDefinitionReaderTest` 类下找到所有的测试用例。
 
-## 4. strp-4-ApplicationContext 登场
+## 4. step-4-ApplicationContext 登场
+
+```shell
+git checkout step-4-application-context
+```
 
 现在 `BeanFactory` 的功能齐全了，但是每次使用都需要手动调用 `XmlBeanDefinitionReader#loadBeanDefinitions(String)`。于是我们引入熟悉的 `ApplicationContext` 接口，并在 `AbstractApplicationContext` 的 `refresh()` 方法中进行bean的初始化工作；同时添加注解 `@Autowired`、`@Component`、`@Scope`，可以使用 `<context:component-scan>` 标签来指定包路径实现自动扫包，`ApplicationContext` 会自动把标注了 `@Component` 的类注册为 `bean`，同时支持在 `bean` 的属性上标注 `@Autowired` 注解来实现自动注入。下面是一个使用示例：
 
@@ -142,7 +150,62 @@ public class ClassPathApplicationContextTest {
 }
 ```
 
+## 5. step-5-注解驱动
 
+```java
+git checkout step-5-annotation-application-context
+```
 
+之前我们想启动 IoC 容器获取 `bean` 都需要 XML 配置文件来完成，现在引入注解驱动 `AnnotationConfigApplicationContext` 再也不用写 XML 啦！
 
+下面是一个简单的示例，这里只展示关键代码，其他可以去 `context` 模块的测试文件夹下找。
+
+配置类：
+
+```java
+@Configuration
+@ComponentScan(basePackages = "com.leisurexi.tiny.spring.context")
+public class BeanConfig {
+
+    @Bean
+    public City city() {
+        City city = City.builder()
+                .id(1L)
+                .name("北京")
+                .build();
+        return city;
+    }
+
+    @Bean
+    public User user(City city) {
+        User user = User.builder()
+                .id(1L)
+                .name("leisurexi")
+                .city(city)
+                .build();
+        return user;
+    }
+
+}
+```
+
+测试类：
+
+```java
+@Slf4j
+public class AnnotationConfigApplicationContextTest {
+
+    @Test
+    public void test() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(BeanConfig.class);
+        context.refresh();
+        UserService userService = context.getBean(UserService.class);
+        userService.save();
+    }
+
+}
+```
+
+至此 IoC 部分已经结束了，后续会进行 AOP 模块的实现。 
 

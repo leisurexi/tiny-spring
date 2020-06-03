@@ -12,7 +12,7 @@ import static com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition.SCO
  * @date: 2020-05-31 21:47
  * @since 0.0.4
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Scope {

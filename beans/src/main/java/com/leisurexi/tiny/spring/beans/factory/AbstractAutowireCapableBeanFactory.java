@@ -157,10 +157,24 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @since 0.0.3
      */
     protected Object createBeanInstance(String beanName, BeanDefinition beanDefinition) throws BeansException {
+        if (beanDefinition.getFactoryMethod() != null) {
+            return instantiateUsingFactoryMethod(beanName, beanDefinition);
+        }
         if (beanDefinition.hasConstructorArgumentValues() || beanDefinition.getAutowireMode() == AUTOWIRE_CONSTRUCTOR) {
             return autowireConstructor(beanName, beanDefinition);
         }
         return instantiateBean(beanDefinition);
+    }
+
+    /**
+     * 用工厂方法去实例化 bean
+     *
+     * @param beanName       bean 的名称
+     * @param beanDefinition bean 的定义元信息
+     * @return bean 的实例
+     */
+    private Object instantiateUsingFactoryMethod(String beanName, BeanDefinition beanDefinition) {
+        return new ConstructorResolver(this).instantiateUsingFactoryMethod(beanName, beanDefinition);
     }
 
     /**

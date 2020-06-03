@@ -2,6 +2,8 @@ package com.leisurexi.tiny.spring.beans.factory.support;
 
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
 
+import java.util.List;
+
 /**
  * BeanDefinition 注册中心接口
  *
@@ -30,5 +32,10 @@ public interface BeanDefinitionRegistry {
      * 返回当前注册中心的 bean definition 数量
      */
     int getBeanDefinitionCount();
+
+    /**
+     * 获取所有 bean 定义的名称
+     */
+    List<String> getBeanDefinitionNames();
 
 }

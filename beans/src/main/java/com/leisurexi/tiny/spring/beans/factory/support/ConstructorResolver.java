@@ -1,5 +1,6 @@
 package com.leisurexi.tiny.spring.beans.factory.support;
 
+import cn.hutool.core.bean.BeanException;
 import cn.hutool.core.convert.Convert;
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
 import com.leisurexi.tiny.spring.beans.factory.AbstractAutowireCapableBeanFactory;
@@ -8,9 +9,7 @@ import com.leisurexi.tiny.spring.beans.factory.config.DependencyDescriptor;
 import com.leisurexi.tiny.spring.beans.util.LocalVariableTableParameterNameDiscoverer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +98,35 @@ public class ConstructorResolver {
     }
 
     /**
+     * 用指定名称的方法去实例化 bean
+     *
+     * @param beanName       bean 的名称
+     * @param beanDefinition bean 的定义元信息
+     * @return bean 的实例
+     */
+    public Object instantiateUsingFactoryMethod(String beanName, BeanDefinition beanDefinition) {
+        String factoryBeanName = beanDefinition.getFactoryBeanName();
+        if (factoryBeanName.equals(beanName)) {
+            throw new BeanException("factory-bean reference points back to the same bean definition");
+        }
+        Object factoryBean = this.beanFactory.getBean(factoryBeanName);
+        Object bean;
+        try {
+            Method method = beanDefinition.getFactoryMethod();
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Object[] parameters = new Object[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> parameterType = parameterTypes[i];
+                parameters[i] = beanFactory.getBean(parameterType);
+            }
+            bean = method.invoke(factoryBean, parameters);
+        } catch (Exception e) {
+            throw new BeanException(e);
+        }
+        return bean;
+    }
+
+    /**
      * 获取函数的参数名称
      */
     private List<String> getParameters(Constructor<?> constructor) {
@@ -176,5 +204,6 @@ public class ConstructorResolver {
             throw new BeansException(e);
         }
     }
+
 
 }

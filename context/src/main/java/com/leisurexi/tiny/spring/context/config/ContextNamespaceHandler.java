@@ -30,7 +30,7 @@ public class ContextNamespaceHandler implements NamespaceHandler {
             throw new IllegalArgumentException("base-package attribute must not be null");
         }
 
-        Map<String, BeanDefinition> beanDefinitionMap = AnnotationConfigUtils.scanComponentRegisterBeanRegistry(basePackage);
+        Map<String, BeanDefinition> beanDefinitionMap = AnnotationConfigUtils.scanComponent(basePackage);
         for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
             registry.registryBeanDefinition(entry.getKey(), entry.getValue());
         }

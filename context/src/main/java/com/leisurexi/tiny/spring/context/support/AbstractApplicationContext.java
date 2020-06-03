@@ -2,6 +2,7 @@ package com.leisurexi.tiny.spring.context.support;
 
 import com.leisurexi.tiny.spring.beans.exception.BeansException;
 import com.leisurexi.tiny.spring.beans.factory.DefaultListableBeanFactory;
+import com.leisurexi.tiny.spring.beans.factory.config.BeanFactoryPostProcessor;
 import com.leisurexi.tiny.spring.beans.factory.config.BeanPostProcessor;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinition;
 import com.leisurexi.tiny.spring.beans.factory.support.BeanDefinitionRegistry;
@@ -30,10 +31,25 @@ public abstract class AbstractApplicationContext implements ApplicationContext, 
         refreshBeanFactory();
         // 注册注解配置处理器
         AnnotationConfigUtils.registerAnnotationConfigProcessors(this);
+        // 调用 beanFactory 的后置处理器
+        invokeBeanFactoryPostProcessors(beanFactory);
         // 注册 bean 的后置处理器
         registerBeanPostProcessors(beanFactory);
         // 完成 beanFactory 的初始化
         finishBeanFactoryInitialization(beanFactory);
+    }
+
+    /**
+     * 调用 beanFactory 的后置处理器
+     *
+     * @param beanFactory bean 工厂
+     */
+    protected void invokeBeanFactoryPostProcessors(DefaultListableBeanFactory beanFactory) {
+        List<String> beanNames = beanFactory.beanNamesForType(BeanFactoryPostProcessor.class);
+        for (String beanName : beanNames) {
+            BeanFactoryPostProcessor beanFactoryPostProcessor = (BeanFactoryPostProcessor) beanFactory.getBean(beanName);
+            beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+        }
     }
 
     /**
@@ -90,6 +106,11 @@ public abstract class AbstractApplicationContext implements ApplicationContext, 
     @Override
     public <T> T getBean(String beanName, Class<T> requiredType) {
         return this.beanFactory.getBean(beanName, requiredType);
+    }
+
+    @Override
+    public List<String> getBeanDefinitionNames() {
+        return this.beanFactory.getBeanDefinitionNames();
     }
 
     //---------------------------------------------------------------------

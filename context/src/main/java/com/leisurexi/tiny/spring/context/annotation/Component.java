@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  * @date: 2020-05-31 21:44
  * @since 0.0.4
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Component {

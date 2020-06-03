@@ -5,6 +5,8 @@ import com.leisurexi.tiny.spring.beans.factory.config.ConstructorArgumentValues;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
+
 
 /**
  * bean 定义的元信息
@@ -91,6 +93,20 @@ public class BeanDefinition {
      * @since 0.0.3
      */
     private String initMethodName;
+
+    /**
+     * 创建 bean 的工厂方法名称
+     *
+     * @since 0.0.4
+     */
+    private Method factoryMethod;
+
+    /**
+     * 创建 bean 的工厂 bean 名称
+     *
+     * @since 0.0.4
+     */
+    private String factoryBeanName;
 
     public BeanDefinition() {
 
