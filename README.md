@@ -12,6 +12,11 @@
 * 可自定义扩展 `bean` 实例化生命周期方法。
 * 可自定义扩展 `bean` 初始化生命周期方法。
 
+## context 模块
+
+* 使用 `ClassPathApplicationContext` 支持 XML 文件 `context:compoment-scan` 标签的指定包扫描标注了 `@Component` 注解的类，并把该类注册为 `bean`，并且支持 `@Autowired` 注解给属性自动注入。
+* 增加 `AnnotationConfigApplicationContext` 支持完全脱离 XML 文件来启动上下文，更增加 `@Configuration`、`@ComponemtScan`、`@Bean` 注解，使用方法基本和 Spring 一致。
+
 # 使用
 
 `tiny-spring` 是逐步进行构建的，里程碑版本我都使用了 **分支** 来管理。例如，最开始的分支是  `step-1-basic-ioc-container`，那么可以使用
