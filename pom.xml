@@ -22,7 +22,7 @@
         <slf4j.version>1.7.28</slf4j.version>
         <logback.version>1.2.3</logback.version>
         <junjt.version>4.13.1</junjt.version>
-        <guava.version>28.2-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <hutool.version>4.5.11</hutool.version>
         <asm-tool.version>0.0.2</asm-tool.version>
     </properties>
